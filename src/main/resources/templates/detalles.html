@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${movie.title} + ' - Detalles'"></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #141414; color: white; }
+        .movie-poster { border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .modal-content { border: none; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark bg-black mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">🎬 PELIS-APP</a>
+            <div class="d-flex align-items-center">
+                <span class="text-secondary me-3" sec:authentication="name">Usuario</span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Salir</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-md-4 text-center">
+                <img th:src="${'https://image.tmdb.org/t/p/w500' + movie.poster_path}" 
+                     class="img-fluid movie-poster" th:alt="${movie.title}">
+            </div>
+
+            <div class="col-md-8">
+                <h1 class="fw-bold" th:text="${movie.title}"></h1>
+                <p class="text-warning fw-bold">⭐ <span th:text="${movie.vote_average}"></span> / 10</p>
+                
+                <h4 class="mt-4">Sinopsis</h4>
+                <p class="lead" th:text="${movie.overview}"></p>
+
+                <div class="mt-5 d-flex gap-3">
+                    <button type="button" class="btn btn-danger btn-lg px-4" 
+                            data-bs-toggle="modal" data-bs-target="#trailerModal"
+                            th:if="${trailerKey != null}">
+                        ▶ Ver Trailer
+                    </button>
+
+                    <form th:action="@{/favoritas/agregar}" method="post">
+                        <input type="hidden" name="movie_id" th:value="${movie.id}">
+                        <input type="hidden" name="title" th:value="${movie.title}">
+                        <input type="hidden" name="poster_path" th:value="${movie.poster_path}">
+                        <button type="submit" class="btn btn-warning btn-lg px-4">
+                             Guardar en Favoritos
+                        </button>
+                    </form>
+                    
+                    <a href="/" class="btn btn-outline-light btn-lg">Volver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="trailerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white">Trailer Oficial</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="ratio ratio-16x9">
+                        <iframe th:if="${trailerKey != null}" 
+                                th:src="'https://www.youtube.com/embed/' + ${trailerKey}" 
+                                allowfullscreen></iframe>
+                        <div th:unless="${trailerKey != null}" class="p-5 text-center">
+                            Lo sentimos, el trailer no está disponible.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const trailerModal = document.getElementById('trailerModal');
+        trailerModal.addEventListener('hidden.bs.modal', function () {
+            const iframe = trailerModal.querySelector('iframe');
+            if (iframe) {
+                const src = iframe.src;
+                iframe.src = src;
+            }
+        });
+    </script>
+</body>
+</html>

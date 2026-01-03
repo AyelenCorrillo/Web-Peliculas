@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Pelis-App | Series de TV</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #141414; color: white; }
+        .navbar { background-color: rgba(0,0,0,0.9) !important; }
+        .card { 
+            background-color: #1f1f1f; 
+            border: none; 
+            transition: transform 0.3s; 
+            cursor: pointer;
+        }
+        .card:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .genre-btn { border-radius: 20px; padding: 5px 20px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-danger" href="/">🎬 PELIS-APP</a>
+            
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" href="/">Películas</a>
+                <a class="nav-link active" href="/series">Series TV</a>
+            </div>
+            <form class="d-flex mx-auto" style="width: 40%;" action="/buscar-serie" method="get">
+                <input class="form-control me-2 bg-dark text-white border-secondary" 
+                    type="search" name="q" placeholder="Buscar serie..." aria-label="Search">
+                <button class="btn btn-outline-info" type="submit">Buscar</button>
+            </form>
+
+            <div class="d-flex align-items-center">
+                <a href="/favoritas" class="btn btn-warning btn-sm me-3 fw-bold">Mis Favoritas</a>
+                <span class="text-light me-3 small" sec:authentication="name">Usuario</span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Cerrar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="fw-bold mb-4 text-info">Series de TV Populares</h2>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="col" th:each="serie : ${series}">
+                <a th:href="@{'/serie/' + ${serie.id}}" class="text-decoration-none">
+                    <div class="card h-100">
+                        <img th:src="${serie.poster_path != null ? 'https://image.tmdb.org/t/p/w500' + serie.poster_path : 'https://via.placeholder.com/500x750?text=Sin+Imagen'}" 
+                             class="card-img-top" th:alt="${serie.name}">
+                        <div class="card-body">
+                            <h6 class="card-title text-white mb-0" th:text="${serie.name}">Nombre de la Serie</h6>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="badge bg-dark text-warning">⭐ <span th:text="${serie.vote_average}">8.0</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-secondary py-5 mt-5">
+        <p class="small">Datos de Series proporcionados por TMDB API</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
