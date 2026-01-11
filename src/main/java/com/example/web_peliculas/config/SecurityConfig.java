@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated() // Todo lo demás requiere login
             )
             .formLogin(form -> form
-                .loginPage("/login") // Nuestra página personalizada
+                .loginPage("/login")
                 .defaultSuccessUrl("/", true)
                 .permitAll()
             )

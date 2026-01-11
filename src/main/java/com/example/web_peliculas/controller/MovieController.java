@@ -15,13 +15,13 @@ import com.example.web_peliculas.model.PeliculaFavorita;
 import com.example.web_peliculas.model.Usuario;
 import com.example.web_peliculas.repository.PeliculaFavoritaRepository;
 import com.example.web_peliculas.repository.UsuarioRepository;
-import com.example.web_peliculas.service.MovieService;
+import com.example.web_peliculas.service.IMovieService;
 
 
 @Controller
 public class MovieController {
 
-    private final MovieService movieService;
+    private final IMovieService movieService;
 
     @Autowired
     private PeliculaFavoritaRepository favoritaRepository;
@@ -29,7 +29,7 @@ public class MovieController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public MovieController(MovieService movieService) {
+    public MovieController(IMovieService movieService) {
         this.movieService = movieService;
     }
 
@@ -37,7 +37,7 @@ public class MovieController {
     public String index(Model model, Principal principal) {
         // Enviamos la lista de películas a la vista de Thymeleaf
         model.addAttribute("movies", movieService.fetchPopularMovies());
-        model.addAttribute("username", principal.getName()); //nombre del usuario
+        model.addAttribute("username", principal.getName()); 
         return "index"; 
     }
 
@@ -50,7 +50,6 @@ public class MovieController {
 
     @GetMapping("/favoritas")
     public String listarFavoritas(Model model, Principal principal) {
-        // Obtenemos el nombre del usuario logueado
         String username = principal.getName();
         
         // Buscamos sus películas en la base de datos
@@ -59,12 +58,11 @@ public class MovieController {
         model.addAttribute("favoritas", favoritas);
         model.addAttribute("username", username);
         
-        return "mis-favoritas"; // Nombre del nuevo HTML
+        return "mis-favoritas"; 
     }
 
     @GetMapping("/genero/{id}")
     public String filtrarPorGenero(@PathVariable String id, Model model, Principal principal) {
-        // Usamos el método que ya tienes en MovieService
         model.addAttribute("movies", movieService.fetchByGenre("movie", id));
         model.addAttribute("username", principal.getName());
         return "index"; // Recargamos la misma página pero con la lista filtrada
@@ -74,7 +72,7 @@ public class MovieController {
     public String buscar(@RequestParam String q, Model model, Principal principal) {
         model.addAttribute("movies", movieService.searchMovies(q));
         model.addAttribute("username", principal.getName());
-        model.addAttribute("queryActual", q); // Para mostrar "Resultados para: ..."
+        model.addAttribute("queryActual", q); 
         return "index"; // Reutilizamos el index para mostrar los resultados
     }
 
@@ -109,7 +107,6 @@ public class MovieController {
     public String eliminarFavorita(@RequestParam Long id_interno) {
         // Borramos directamente por el ID de nuestra tabla en MySQL
         favoritaRepository.deleteById(id_interno);       
-        // Redirigimos de vuelta a la lista de favoritas para ver el cambio
         return "redirect:/favoritas";
     }
 
